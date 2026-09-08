@@ -1,0 +1,10 @@
+from src.application.common.bus import RequestBusImpl
+
+from . import book, category
+
+
+def setup_use_cases(request_bus: RequestBusImpl) -> None:
+    request_bus.register(category.SelectManyCategoriesRequest, category.SelectManyCategoriesUseCase)
+
+    request_bus.register(book.SelectBookRequest, book.SelectBookUseCase)
+    request_bus.register(book.SelectManyBooksRequest, book.SelectManyBooksUseCase)

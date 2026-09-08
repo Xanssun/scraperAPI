@@ -1,5 +1,7 @@
 from dishka import AsyncContainer, Provider, make_async_container
 
+from src.application.provider import ApplicationProvider
+from src.database.psql.provider import DatabaseProvider
 from src.settings.core import Settings
 from src.settings.provider import SettingsProvider
 
@@ -7,6 +9,8 @@ from src.settings.provider import SettingsProvider
 def build_container(settings: Settings, *extra: Provider) -> AsyncContainer:
     return make_async_container(
         SettingsProvider(),
+        DatabaseProvider(),
+        ApplicationProvider(),
         *extra,
         context={Settings: settings},
     )
