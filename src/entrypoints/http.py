@@ -10,6 +10,7 @@ from src.entrypoints.container import build_container
 from src.entrypoints.server import run_api_granian
 from src.presentation.http.common.middlewares import setup_global_middlewares
 from src.presentation.http.common.responses import ORJSONResponse
+from src.presentation.http.v1.endpoints import setup_v1_routers
 from src.settings.core import Settings, load_settings
 
 log = structlog.get_logger(__name__)
@@ -56,6 +57,7 @@ def create_app(
     container = build_container(settings, FastapiProvider())
     setup_dishka(container, app)
 
+    setup_v1_routers(app)
     setup_global_middlewares(app, settings.server)
 
     return app
