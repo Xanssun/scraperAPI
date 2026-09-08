@@ -1,0 +1,88 @@
+[project]
+name = "scraper"
+version = "0.1.0"
+description = ""
+authors = [{name = "Michail"}]
+requires-python = "~=3.12.0"
+dependencies = [
+    "uvloop>=0.21.0,<0.22; sys_platform == 'linux' or sys_platform == 'darwin'",
+    "granian>=2.7.2,<3",
+    "pydantic-settings>=2.13.1,<3",
+    "uuid-utils>=0.10.0,<0.11",
+    "redis>=7.4.0,<8",
+    "types-redis>=4.6.0.20241004,<5",
+    "dishka>=1.9.1",
+    "nats-py>=2.14.0,<3",
+    "aiohttp>=3.13.5,<4",
+    "pydantic>=2.12.5,<3",
+    "argon2-cffi>=25.1.0,<26",
+    "pyjwt>=2.12.1,<3",
+    "sqlalchemy>=2.0.49,<3",
+    "alembic>=1.18.4,<2",
+    "asyncpg>=0.31.0,<0.32",
+    "greenlet>=3.1.1",
+    "fastapi>=0.135.3,<1",
+    "orjson>=3.11.8",
+    "uvicorn>=0.44.0",
+    "aioboto3>=15.5.0",
+    "aiofiles>=25.1.0",
+    "faststream[cli]>=0.6.7,<0.7",
+    "taskiq>=0.12.1",
+    "taskiq-nats>=0.6.0",
+    "msgpack>=1.1.0",
+    "sqla-autoloads>=0.1.6",
+    "structlog>=24.4.0",
+    "certifi>=2025.1.31",
+    "dishka-faststream>=0.6.0",
+]
+
+
+[dependency-groups]
+dev = [
+    "mypy>=1.15.0,<2",
+    "pre-commit>=4.2.0",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=0.24.0",
+    "pytest-xdist>=3.6.0",
+    "anyio>=4.7.0",
+    "psycopg2-binary>=2.9.9",
+    "httpx>=0.27.0",
+    "ruff>=0.11.2,<0.12",
+    "testcontainers>=4.10.0",
+]
+
+
+[tool.mypy]
+warn_unused_ignores = false
+follow_imports_for_stubs = true
+pretty = true
+show_absolute_path = true
+hide_error_codes = false
+show_error_context = true
+strict = true
+warn_unreachable = true
+warn_no_return = true
+
+[tool.ruff]
+lint.ignore = ["E501", "B008", "C901", "W191", "UP007", "UP006", "UP035"]
+
+lint.select = ["E", "W", "F", "I", "C", "B", "UP"]
+
+[tool.pytest.ini_options]
+pythonpath = [".", "src"]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+addopts = [
+    "-p", "no:warnings",
+    "--strict-markers",
+    "-n", "auto",
+    "--dist", "loadfile",
+]
+markers = [
+    "unit: fast tests with no I/O (mocks/fakes only)",
+    "integration: tests with real DB/Redis/NATS via testcontainers",
+    "e2e: full HTTP-stack tests through real app + DB",
+    "slow: tests over 1 second",
+]
