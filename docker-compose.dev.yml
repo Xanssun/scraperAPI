@@ -1,7 +1,7 @@
 services:
   postgres:
     container_name: postgres-dev
-    image: postgres:15.6-alpine3.19
+    image: postgres:18-alpine
     restart: unless-stopped
     ports:
       - "54522:5432"
