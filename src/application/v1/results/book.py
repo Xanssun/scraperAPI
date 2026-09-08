@@ -1,14 +1,29 @@
+from __future__ import annotations
+
+from decimal import Decimal
+from typing import TYPE_CHECKING
+
 import uuid_utils.compat as uuid
 
 from src.application.v1.results.base import Result
-from src.application.v1.results.category import CategoryResult
+
+if TYPE_CHECKING:
+    from src.application.v1.results.category import CategoryShortResult
 
 
-class BookResult(Result):
+class BookShortResult(Result):
     uuid: uuid.UUID
     title: str
-    author: str
-    isbn: str
-    price: float
+    upc: str
+    price: Decimal
 
-    category: CategoryResult | None = None
+
+class BookResult(BookShortResult):
+    stock_count: int
+    rating: int
+    description: str
+    page_url: str
+    image_url: str
+    category_uuid: uuid.UUID
+
+    category: CategoryShortResult | None = None
