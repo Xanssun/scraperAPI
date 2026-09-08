@@ -1,0 +1,86 @@
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+from typing import Any
+
+import structlog
+from dishka.integrations.fastapi import FastapiProvider, setup_dishka
+from fastapi import FastAPI
+
+from src.entrypoints.container import build_container
+from src.entrypoints.server import run_api_granian
+from src.presentation.http.common.middlewares import setup_global_middlewares
+from src.presentation.http.common.responses import ORJSONResponse
+from src.settings.core import Settings, load_settings
+
+log = structlog.get_logger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    log.info("Startup")
+
+    try:
+        yield
+    finally:
+        log.info("Shutdown started")
+
+        await app.state.dishka_container.close()
+
+        log.info("Shutdown finished")
+
+
+def create_app(
+    settings: Settings,
+    title: str = "FastAPI",
+    version: str = "0.1.0",
+    docs_url: str | None = "/docs",
+    redoc_url: str | None = "/redoc",
+    swagger_ui_oauth2_redirect_url: str | None = "/docs/oauth2-redirect",
+    root_path: str = "",
+    **kw: Any,
+) -> FastAPI:
+    log.info("Initialize HTTP application")
+
+    app = FastAPI(
+        title=title,
+        version=version,
+        default_response_class=ORJSONResponse,
+        lifespan=lifespan,
+        docs_url=docs_url,
+        redoc_url=redoc_url,
+        swagger_ui_oauth2_redirect_url=swagger_ui_oauth2_redirect_url,
+        root_path=root_path,
+        **kw,
+    )
+
+    container = build_container(settings, FastapiProvider())
+    setup_dishka(container, app)
+
+    setup_global_middlewares(app, settings.server)
+
+    return app
+
+
+def run(settings: Settings) -> None:
+    match settings.server.type:
+        case "granian":
+            run_api_granian("src.entrypoints.http:create_app_factory", settings.server)
+        case _:
+            raise ValueError(
+                f"Unsupported server type: '{settings.server.type}'. "
+                "Currently only 'granian' server type is supported."
+            )
+
+
+def create_app_factory() -> FastAPI:
+    settings = load_settings()
+    return create_app(settings)
+
+
+def main() -> None:
+    settings = load_settings()
+    run(settings)
+
+
+if __name__ == "__main__":
+    main()
