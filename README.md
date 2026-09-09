@@ -29,7 +29,7 @@ cp .env.example .env
 Поднимите весь стек:
 
 ```bash
-docker compose up --build
+make docker-up
 ```
 
 Команда поднимает:
@@ -41,10 +41,6 @@ docker compose up --build
 - `worker`
 
 Миграции применяются автоматически сервисом `migrate`:
-
-```bash
-alembic upgrade head
-```
 
 HTTP API будет доступно по адресу:
 
@@ -63,7 +59,7 @@ http://localhost:8080/docs
 Установить зависимости:
 
 ```bash
-uv sync --all-groups
+make install
 ```
 
 Поднять инфраструктуру для разработки:
