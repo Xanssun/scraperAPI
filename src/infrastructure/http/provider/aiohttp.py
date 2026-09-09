@@ -25,6 +25,7 @@ from src.infrastructure.http.provider import errors as err
 from src.infrastructure.http.provider.base import DEFAULT_CHUNK_SIZE, AsyncProvider
 from src.infrastructure.http.provider.middleware.base import RequestMiddlewareType
 from src.infrastructure.http.provider.middleware.error import RequestErrorMiddleware
+from src.infrastructure.http.provider.middleware.retry import RetryMiddleware
 from src.infrastructure.http.provider.response import Response
 from src.infrastructure.http.provider.types import RequestMethodType
 
@@ -159,7 +160,10 @@ class AiohttpProvider(AsyncProvider):
         self,
         url: str | None = None,
         proxy: _ProxyType | None = None,
-        middlewares: Tuple[RequestMiddlewareType, ...] = (RequestErrorMiddleware(),),
+        middlewares: Tuple[RequestMiddlewareType, ...] = (
+            RetryMiddleware(),
+            RequestErrorMiddleware(),
+        ),
         **kw: Unpack[ParamsType],
     ) -> None:
         super().__init__(url=url, middlewares=middlewares)

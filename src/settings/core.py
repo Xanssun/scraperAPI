@@ -104,19 +104,34 @@ class ServerSettings(BaseSettings):
     threads: int = 1
 
 
+class BooksToScrapeSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file="./.env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        env_prefix="BOOKS_TO_SCRAPE_",
+        extra="ignore",
+    )
+
+    base_url: str = "https://books.toscrape.com/"
+
+
 class Settings(BaseSettings):
     app: AppSettings
     db: DatabaseSettings
     server: ServerSettings
+    books_to_scrape: BooksToScrapeSettings
 
 
 def load_settings(
     db: DatabaseSettings | None = None,
     server: ServerSettings | None = None,
     app: AppSettings | None = None,
+    books_to_scrape: BooksToScrapeSettings | None = None,
 ) -> Settings:
     return Settings(
         db=db or DatabaseSettings(),
         server=server or ServerSettings(),
         app=app or AppSettings(),
+        books_to_scrape=books_to_scrape or BooksToScrapeSettings(),
     )
