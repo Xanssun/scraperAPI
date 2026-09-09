@@ -116,11 +116,25 @@ class BooksToScrapeSettings(BaseSettings):
     base_url: str = "https://books.toscrape.com/"
 
 
+class NatsSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file="./.env",
+        case_sensitive=False,
+        env_prefix="NATS_",
+        extra="ignore",
+    )
+
+    servers: list[str] = []
+    user: str = ""
+    password: str = ""
+
+
 class Settings(BaseSettings):
     app: AppSettings
     db: DatabaseSettings
     server: ServerSettings
     books_to_scrape: BooksToScrapeSettings
+    nats: NatsSettings
 
 
 def load_settings(
@@ -128,10 +142,12 @@ def load_settings(
     server: ServerSettings | None = None,
     app: AppSettings | None = None,
     books_to_scrape: BooksToScrapeSettings | None = None,
+    nats: NatsSettings | None = None,
 ) -> Settings:
     return Settings(
         db=db or DatabaseSettings(),
         server=server or ServerSettings(),
         app=app or AppSettings(),
         books_to_scrape=books_to_scrape or BooksToScrapeSettings(),
+        nats=nats or NatsSettings(),
     )
