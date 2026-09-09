@@ -60,3 +60,7 @@ test-unit: ## Run unit tests
 .PHONY: docker-dev-up
 docker-dev-up: ## Start dev infra
 	$(COMPOSE_DEV) up -d
+
+.PHONY: run-worker
+run-worker: ## Run Taskiq worker
+	$(PYTHON) taskiq worker src.entrypoints.tasks:broker

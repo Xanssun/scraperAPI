@@ -23,7 +23,7 @@ services:
       - interconnect
 
   nats:
-    container_name: template-nats-dev
+    container_name: nats-dev
     image: nats:2-alpine
     restart: unless-stopped
     ports:

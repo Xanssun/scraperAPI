@@ -3,6 +3,7 @@ from src.presentation.http.common.contract import Contract
 from .book import Book, SelectBooks
 from .category import Category, SelectCategories
 from .pagination import OffsetPagination
+from .scrape import ScrapeRun, SelectScrapeRuns, StartBooksScrape
 from .short import BookShort, CategoryShort
 
 __all__ = (
@@ -14,6 +15,9 @@ __all__ = (
     "Book",
     "BookShort",
     "SelectBooks",
+    "ScrapeRun",
+    "SelectScrapeRuns",
+    "StartBooksScrape",
 )
 
 

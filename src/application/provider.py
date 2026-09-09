@@ -3,6 +3,7 @@ from typing import Callable
 from dishka import Provider, Scope, provide
 
 from src.application.common.bus import RequestBusImpl
+from src.application.common.interfaces.books_to_scrape import BooksToScrapeClient
 from src.application.common.interfaces.request_bus import RequestBus
 from src.application.common.interfaces.scrape_tasks import ScrapeTaskProducer
 from src.application.v1.services import BooksToScrapeService
@@ -15,6 +16,13 @@ type DatabaseFactory = Callable[[], DBGateway]
 
 class ApplicationProvider(Provider):
     scope = Scope.APP
+
+    @provide
+    def books_to_scrape_service(
+        self,
+        client: BooksToScrapeClient,
+    ) -> BooksToScrapeService:
+        return BooksToScrapeService(client=client)
 
     @provide
     def service_gateway(self, books_to_scrape: BooksToScrapeService) -> ServiceGateway:
