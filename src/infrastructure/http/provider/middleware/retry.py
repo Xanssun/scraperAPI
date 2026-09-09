@@ -1,4 +1,5 @@
 import asyncio
+from collections.abc import Collection
 from http import HTTPStatus
 from typing import Any
 
@@ -12,11 +13,17 @@ from src.infrastructure.http.provider.types import RequestMethodType
 
 
 class RetryMiddleware(BaseRequestMiddleware):
-    __slots__ = ("_attempts", "_base_delay")
+    __slots__ = ("_attempts", "_base_delay", "_retry_methods")
 
-    def __init__(self, attempts: int = 3, base_delay: float = 0.3) -> None:
+    def __init__(
+        self,
+        attempts: int = 3,
+        base_delay: float = 0.3,
+        retry_methods: Collection[RequestMethodType] = ("GET", "HEAD", "OPTIONS"),
+    ) -> None:
         self._attempts = attempts
         self._base_delay = base_delay
+        self._retry_methods = frozenset(retry_methods)
 
     async def __call__(
         self,
@@ -25,6 +32,13 @@ class RetryMiddleware(BaseRequestMiddleware):
         url_or_endpoint: str,
         **kw: Any,
     ) -> Response:
+        if method not in self._retry_methods:
+            return await call_next(
+                method=method,
+                url_or_endpoint=url_or_endpoint,
+                **kw,
+            )
+
         for attempt in range(1, self._attempts + 1):
             try:
                 return await call_next(

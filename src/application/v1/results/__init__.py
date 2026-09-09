@@ -1,5 +1,10 @@
 from .base import OffsetResult, Result, StatusResult
 from .book import BookResult, BookShortResult
+from .books_to_scrape import (
+    ParsedBookPreviewResult,
+    ParsedBookResult,
+    ParsedCatalogPageResult,
+)
 from .category import CategoryResult, CategoryShortResult
 
 BookResult.model_rebuild(
@@ -19,6 +24,9 @@ __all__ = (
     "CategoryResult",
     "CategoryShortResult",
     "OffsetResult",
+    "ParsedBookPreviewResult",
+    "ParsedBookResult",
+    "ParsedCatalogPageResult",
     "Result",
     "StatusResult",
 )
