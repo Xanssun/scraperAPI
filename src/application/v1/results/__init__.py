@@ -6,6 +6,7 @@ from .books_to_scrape import (
     ParsedCatalogPageResult,
 )
 from .category import CategoryResult, CategoryShortResult
+from .scrape_run import ScrapeRunResult
 
 BookResult.model_rebuild(
     _types_namespace={
@@ -28,5 +29,6 @@ __all__ = (
     "ParsedBookResult",
     "ParsedCatalogPageResult",
     "Result",
+    "ScrapeRunResult",
     "StatusResult",
 )

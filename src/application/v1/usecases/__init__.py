@@ -1,6 +1,6 @@
 from src.application.common.bus import RequestBusImpl
 
-from . import book, category
+from . import book, category, scrape
 
 
 def setup_use_cases(request_bus: RequestBusImpl) -> None:
@@ -8,3 +8,5 @@ def setup_use_cases(request_bus: RequestBusImpl) -> None:
 
     request_bus.register(book.SelectBookRequest, book.SelectBookUseCase)
     request_bus.register(book.SelectManyBooksRequest, book.SelectManyBooksUseCase)
+
+    request_bus.register(scrape.StartBooksScrapeRequest, scrape.StartBooksScrapeUseCase)

@@ -4,6 +4,7 @@ from dishka import Provider, Scope, provide
 
 from src.application.common.bus import RequestBusImpl
 from src.application.common.interfaces.request_bus import RequestBus
+from src.application.common.interfaces.scrape_tasks import ScrapeTaskProducer
 from src.application.v1.services import BooksToScrapeService
 from src.application.v1.services.gateway import ServiceGateway
 from src.application.v1.usecases import setup_use_cases
@@ -24,12 +25,14 @@ class ApplicationProvider(Provider):
         self,
         database_factory: DatabaseFactory,
         services: ServiceGateway,
+        scrape_tasks: ScrapeTaskProducer,
     ) -> RequestBus:
         return (
             RequestBusImpl.builder()
             .dependencies(
                 database=database_factory,
                 services=services,
+                scrape_tasks=scrape_tasks,
             )
             .use_cases(setup_use_cases)
             .build()
