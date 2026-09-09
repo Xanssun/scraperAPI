@@ -57,6 +57,14 @@ test: ## Run all tests
 test-unit: ## Run unit tests
 	$(PYTHON) pytest -m unit
 
+.PHONY: test-integration
+test-integration: ## Run integration tests
+	$(PYTHON) pytest -m integration
+
+.PHONY: test-e2e
+test-e2e: ## Run e2e tests
+	$(PYTHON) pytest -m e2e
+
 .PHONY: docker-dev-up
 docker-dev-up: ## Start dev infra
 	$(COMPOSE_DEV) up -d
