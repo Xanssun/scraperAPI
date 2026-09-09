@@ -22,9 +22,7 @@ class SelectManyBooksRequest(Request):
 
 
 @dataclass(slots=True)
-class SelectManyBooksUseCase(
-    UseCase[SelectManyBooksRequest, OffsetResult[BookResult]]
-):
+class SelectManyBooksUseCase(UseCase[SelectManyBooksRequest, OffsetResult[BookResult]]):
     database: DBGateway
 
     async def __call__(

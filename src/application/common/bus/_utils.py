@@ -10,7 +10,7 @@ def _resolve_factory[T](use_case: Callable[[], T] | T, compare_with: type[Any]) 
     if isinstance(use_case, compare_with):
         return cast(T, use_case)
 
-    return use_case() if callable(use_case) else use_case #type: ignore
+    return use_case() if callable(use_case) else use_case  # type: ignore
 
 
 def _predict_dependency_or_raise(

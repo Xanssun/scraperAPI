@@ -18,6 +18,7 @@ Price = Annotated[
     ),
 ]
 
+
 class Book(Contract):
     uuid: uuid.UUID
     title: str

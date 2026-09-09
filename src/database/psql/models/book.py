@@ -11,6 +11,7 @@ from src.database.psql.models.base import Base, mixins
 if TYPE_CHECKING:
     from src.database.psql.models import Category
 
+
 class Book(mixins.UUIDMixin, mixins.TimeMixin, Base):
     title: orm.Mapped[str] = orm.mapped_column(
         sa.String,
@@ -50,10 +51,7 @@ class Book(mixins.UUIDMixin, mixins.TimeMixin, Base):
     )
     category_uuid: orm.Mapped[uuid_type] = orm.mapped_column(
         UUID(as_uuid=True),
-        sa.ForeignKey(
-            "category.uuid",
-            ondelete="RESTRICT"
-        ),
+        sa.ForeignKey("category.uuid", ondelete="RESTRICT"),
         index=True,
         nullable=False,
     )

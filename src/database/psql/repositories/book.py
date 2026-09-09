@@ -112,9 +112,7 @@ class BookRepository(BaseRepository[models.Book]):
             where_clauses.append(self.model.rating == rating)
         if in_stock is not None:
             where_clauses.append(
-                self.model.stock_count > 0
-                if in_stock
-                else self.model.stock_count == 0
+                self.model.stock_count > 0 if in_stock else self.model.stock_count == 0
             )
 
         total = await self._crud.count(*where_clauses)

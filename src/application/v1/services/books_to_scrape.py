@@ -87,7 +87,9 @@ class BooksToScrapeService:
                 self._text_required(node.select_one(".price_color"), "book price")
             ),
             stock_count=self._parse_stock_count(
-                self._text_required(node.select_one(".availability"), "book availability")
+                self._text_required(
+                    node.select_one(".availability"), "book availability"
+                )
             ),
             rating=self._parse_rating(node.select_one(".star-rating")),
         )

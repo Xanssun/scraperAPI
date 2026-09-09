@@ -1,0 +1,110 @@
+x-app-base: &app-base
+  image: scraper-api:latest
+  init: true
+  env_file:
+    - ./.env
+  environment:
+    DB_HOST: postgres
+    DB_PORT: "5432"
+    NATS_SERVERS: '["nats://nats:4222"]'
+  restart: unless-stopped
+  networks:
+    - interconnect
+
+services:
+  postgres:
+    container_name: scraper-postgres
+    image: postgres:18-alpine
+    restart: unless-stopped
+    ports:
+      - "54522:5432"
+    env_file:
+      - ./.env
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_DB: ${DB_NAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - interconnect
+
+  nats:
+    container_name: scraper-nats
+    image: nats:2-alpine
+    restart: unless-stopped
+    ports:
+      - "4222:4222"
+      - "6222:6222"
+      - "8222:8222"
+    command:
+      - "-js"
+      - "-m"
+      - "8222"
+    volumes:
+      - nats_data:/data
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - interconnect
+
+  migrate:
+    <<: *app-base
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: scraper-migrate
+    restart: "no"
+    command: ["alembic", "upgrade", "head"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  http:
+    <<: *app-base
+    container_name: scraper-http
+    command: ["python", "-m", "src.entrypoints.http"]
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      NATS_SERVERS: '["nats://nats:4222"]'
+      SERVER_HOST: 0.0.0.0
+      SERVER_PORT: "8080"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  worker:
+    <<: *app-base
+    container_name: scraper-worker
+    command: ["taskiq", "worker", "src.entrypoints.tasks:broker"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  postgres_data: {}
+  nats_data: {}
+
+networks:
+  interconnect:
+    driver: bridge

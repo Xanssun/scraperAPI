@@ -32,7 +32,7 @@ class Result[T]:
         if self.data is not None:
             return self.data
 
-        raise exception_map[self.exception_type] #type: ignore
+        raise exception_map[self.exception_type]  # type: ignore
 
     def result_or_raise(self, exception_to_raise: AppException) -> T:
         if self.data is not None:

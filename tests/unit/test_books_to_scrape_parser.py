@@ -27,7 +27,9 @@ async def test_parse_book_page_from_html_fixture() -> None:
     assert book.stock_count == 22
     assert book.rating == 3
     assert book.category == "Mystery"
-    assert book.description == "It's hard to imagine a world without A Light in the Attic."
+    assert (
+        book.description == "It's hard to imagine a world without A Light in the Attic."
+    )
     assert book.page_url == url
     assert book.image_url == (
         "https://books.toscrape.com/media/cache/fe/72/"

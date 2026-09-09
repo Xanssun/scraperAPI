@@ -41,7 +41,9 @@ async def test_book_create_update_by_existing_upc_does_not_duplicate(
         ).result()
 
         total_books = await database.manager.session.scalar(
-            select(func.count()).select_from(models.Book).where(models.Book.upc == "upc-1")
+            select(func.count())
+            .select_from(models.Book)
+            .where(models.Book.upc == "upc-1")
         )
 
     assert created_book.uuid == updated_book.uuid

@@ -24,7 +24,9 @@ from src.database.psql.types.category import (
 class CategoryRepository(BaseRepository[models.Category]):
     __slots__ = ()
 
-    async def create(self, **data: Unpack[CreateCategoryType]) -> Result[models.Category]:
+    async def create(
+        self, **data: Unpack[CreateCategoryType]
+    ) -> Result[models.Category]:
         return Result("create", await self._crud.insert(**data))
 
     async def select(

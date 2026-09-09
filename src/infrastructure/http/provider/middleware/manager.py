@@ -11,9 +11,7 @@ class RequestMiddlewareManager(t.Sequence[RequestMiddlewareType]):
     def __init__(self, *middlewares: RequestMiddlewareType) -> None:
         self._middlewares: t.List[RequestMiddlewareType] = list(middlewares)
 
-    def register(
-        self, middleware: RequestMiddlewareType
-    ) -> RequestMiddlewareType:
+    def register(self, middleware: RequestMiddlewareType) -> RequestMiddlewareType:
         self._middlewares.append(middleware)
         return middleware
 

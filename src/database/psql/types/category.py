@@ -9,4 +9,3 @@ class CreateCategoryType(TypedDict):
 
 class UpdateCategoryType(TypedDict, total=False):
     name: str | None
-

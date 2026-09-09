@@ -1,4 +1,5 @@
 PYTHON ?= uv run
+COMPOSE ?= docker compose
 COMPOSE_DEV ?= docker compose -f docker-compose.dev.yml
 
 .PHONY: install
@@ -64,6 +65,10 @@ test-integration: ## Run integration tests
 .PHONY: test-e2e
 test-e2e: ## Run e2e tests
 	$(PYTHON) pytest -m e2e
+
+.PHONY: docker-up
+docker-up: ## Start full stack
+	$(COMPOSE) up -d
 
 .PHONY: docker-dev-up
 docker-dev-up: ## Start dev infra

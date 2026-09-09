@@ -261,9 +261,7 @@ class AiohttpProvider(AsyncProvider):
             url = url_or_endpoint
         else:
             if not self.url:
-                raise ValueError(
-                    "If you want to use endpoints you should provide url."
-                )
+                raise ValueError("If you want to use endpoints you should provide url.")
             url = parse.urljoin(self.url, url_or_endpoint)
 
         return url

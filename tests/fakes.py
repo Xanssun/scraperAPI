@@ -55,4 +55,6 @@ class FakeBooksToScrapeClient:
         try:
             return self.book_pages[url_or_path]
         except KeyError as e:
-            raise ValueError(f"Book page fixture `{url_or_path}` is not registered") from e
+            raise ValueError(
+                f"Book page fixture `{url_or_path}` is not registered"
+            ) from e

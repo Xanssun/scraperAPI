@@ -46,9 +46,7 @@ async def scrape_books(
         )
         stats = await _save_books(database, books, fetch_errors)
         state = (
-            ScrapeRunStatus.FAILED
-            if stats.error_count
-            else ScrapeRunStatus.SUCCEEDED
+            ScrapeRunStatus.FAILED if stats.error_count else ScrapeRunStatus.SUCCEEDED
         )
     except Exception:
         stats.error_count += 1
@@ -82,9 +80,7 @@ async def _scrape_books(
             error_count += 1
 
     book_urls = [
-        book.page_url
-        for catalog_page in catalog_pages
-        for book in catalog_page.books
+        book.page_url for catalog_page in catalog_pages for book in catalog_page.books
     ]
     book_results = await asyncio.gather(
         *(_scrape_book(services, url, semaphore) for url in book_urls),
@@ -132,13 +128,9 @@ async def _save_books(
                 await database.category.select(name=book.category)
             ).result_or_none()
             if category is None:
-                category = (
-                    await database.category.create(name=book.category)
-                ).result()
+                category = (await database.category.create(name=book.category)).result()
 
-            existing_book = (
-                await database.book.select(upc=book.upc)
-            ).result_or_none()
+            existing_book = (await database.book.select(upc=book.upc)).result_or_none()
             if existing_book is None:
                 await database.book.create(
                     title=book.title,

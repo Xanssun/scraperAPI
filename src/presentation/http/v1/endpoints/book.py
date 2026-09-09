@@ -56,4 +56,3 @@ async def select_book_endpoint(
         SelectBookRequest(book_uuid=book_uuid, loads=loads)
     )
     return contracts.Book.model_validate(result)
-

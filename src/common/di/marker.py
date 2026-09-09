@@ -12,4 +12,4 @@ else:
 
 
 def FromDepends[T]() -> Depends[T]:
-    return cast(Depends[T], ...) #type: ignore
+    return cast(Depends[T], ...)  # type: ignore
