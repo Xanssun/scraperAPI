@@ -18,6 +18,38 @@ API и асинхронный скрапер для [books.toscrape.com](https:/
 - Dishka
 - uv
 
+## Архитектура
+
+Проект разложен в стиле hexagonal architecture. Внутри находится application-слой с use cases, портами и сервисами, а внешние детали подключаются вокруг него через адаптеры: HTTP API, Postgres, внешний сайт `books.toscrape.com` и Taskiq/NATS.
+
+Главная идея: бизнес-сценарии не зависят напрямую от FastAPI, aiohttp, SQLAlchemy engine или Taskiq. Use case работает с портами и gateway, а конкретная инфраструктура подставляется через DI.
+
+```text
+src/
+├── application/          # use cases, application services, results, ports
+├── database/psql/        # SQLAlchemy models, repositories, DBGateway, migrations support
+├── infrastructure/       # outbound adapters: HTTP provider and external clients
+├── presentation/http/    # inbound HTTP adapter: routers, contracts, middlewares
+├── tasks/                # background tasks, Taskiq broker and producer
+├── entrypoints/          # composition roots for HTTP app and task worker
+├── settings/             # typed application settings
+└── common/               # shared small utilities and DI markers
+```
+
+Что лежит в основных папках:
+
+- `application/common/interfaces` — порты, через которые use cases говорят с внешним миром. Например `BooksToScrapeClient` и `ScrapeTaskProducer`.
+- `application/v1/usecases` — бизнес-сценарии: получить книги, получить категории, запустить скрапинг, посмотреть scrape runs.
+- `application/v1/services` — application services. `BooksToScrapeService` берет raw HTML от клиента и превращает его в application result.
+- `application/v1/results` — внутренние DTO, которые use cases возвращают наружу.
+- `database/psql/models` — ORM-модели таблиц.
+- `database/psql/repositories` — тонкий слой работы с БД. Репозитории не решают бизнес-логику, а только выполняют `create/select/update/delete/select_many`.
+- `infrastructure/http/provider` — общий async HTTP provider на aiohttp, middleware для ошибок, retry и логирования.
+- `infrastructure/http/clients` — клиенты внешних HTTP API. Сейчас это `BooksToScrapeAPI`.
+- `presentation/http/v1` — FastAPI endpoints и Pydantic contracts для входящих/исходящих HTTP-данных.
+- `tasks` — Taskiq-задачи и producer, который ставит задачи в NATS.
+- `entrypoints` — точки сборки приложения: HTTP-процесс и worker-процесс используют общий DI container.
+
 ## Быстрый Старт
 
 Создайте `.env` из примера:
@@ -145,11 +177,15 @@ CI настроен в `.github/workflows/ci.yml`: на push и pull request з�
 
 ## Решения
 
+Hexagonal architecture выбрана, чтобы отделить бизнес-сценарии от способов запуска и внешней инфраструктуры. Один и тот же application-слой используется HTTP endpoint-ами, task worker-ом и тестами.
+
 Скрапер ходит по страницам каталога `1..50`. Для каждой страницы он берет ссылки на карточки книг и затем параллельно загружает карточки. Параллелизм ограничен параметром `concurrency`, максимум 10. Сетевые ошибки и ответы `5xx` ретраятся middleware-слоем HTTP provider-а с backoff, `4xx` не ретраятся.
 
 HTML парсится через BeautifulSoup4. Для этого сайта это проще и прозрачнее, чем тащить headless browser: контент статический, данные лежат в обычной HTML-разметке, JavaScript не нужен.
 
 Внешний HTTP API разделен на Client и Service. `BooksToScrapeAPI` находится в infrastructure-слое и возвращает raw response DTO с HTML. `BooksToScrapeService` находится в application-слое и превращает HTML в application results.
+
+Роутеры FastAPI находятся в presentation-слое и не работают с БД напрямую. Они собирают request DTO, отправляют их в `RequestBus` и мапят application results в HTTP contracts.
 
 Книги и категории лежат в отдельных таблицах. Запуски скрапинга хранятся в `scrape_run`: время старта, время завершения, статус, количество обработанных, созданных, обновленных записей и ошибок.
 

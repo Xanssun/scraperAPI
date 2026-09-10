@@ -14,7 +14,7 @@ from src.application.v1.services.gateway import ServiceGateway
 from src.database.psql import DBGateway
 from src.database.psql.models.types import ScrapeRunStatus
 
-BOOKS_SCRAPE_TASK_NAME = "books.scrape"
+SCRAPER_TASK_NAME = "books.scrape"
 
 
 @dataclass(slots=True)
@@ -181,8 +181,8 @@ async def _finish_run(
         )
 
 
-def setup_books_tasks(broker: AsyncBroker) -> None:
+def setup_scraper_tasks(broker: AsyncBroker) -> None:
     broker.register_task(
         inject(scrape_books, patch_module=True),
-        task_name=BOOKS_SCRAPE_TASK_NAME,
+        task_name=SCRAPER_TASK_NAME,
     )

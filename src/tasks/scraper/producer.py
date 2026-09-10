@@ -2,7 +2,7 @@ import uuid_utils.compat as uuid
 from taskiq import AsyncBroker
 
 from src.application.common.interfaces.scrape_tasks import ScrapeTaskProducer
-from src.tasks.books import BOOKS_SCRAPE_TASK_NAME
+from src.tasks.scraper.task import SCRAPER_TASK_NAME
 
 
 class TaskiqScrapeTaskProducer(ScrapeTaskProducer):
@@ -19,9 +19,9 @@ class TaskiqScrapeTaskProducer(ScrapeTaskProducer):
         end_page: int,
         concurrency: int,
     ) -> None:
-        task = self._broker.find_task(BOOKS_SCRAPE_TASK_NAME)
+        task = self._broker.find_task(SCRAPER_TASK_NAME)
         if task is None:
-            raise RuntimeError(f"Task `{BOOKS_SCRAPE_TASK_NAME}` is not registered")
+            raise RuntimeError(f"Task `{SCRAPER_TASK_NAME}` is not registered")
 
         await task.kiq(
             str(run_uuid),

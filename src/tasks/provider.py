@@ -7,7 +7,7 @@ from src.application.common.interfaces.scrape_tasks import ScrapeTaskProducer
 from src.settings.core import Settings
 from src.tasks import setup_tasks
 from src.tasks.broker import create_taskiq_broker
-from src.tasks.producer import TaskiqScrapeTaskProducer
+from src.tasks.scraper.producer import TaskiqScrapeTaskProducer
 
 
 class TasksProvider(Provider):
